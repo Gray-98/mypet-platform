@@ -20,7 +20,7 @@ pipeline {
           sh """
             docker stop mypet-platform
             docker rm -f mypet-platform
-            docker run -d -p 3000:3000 --name mypet-platform $IMAGE_API_NAME
+            docker run -d -p 3001:3000 --name mypet-platform $IMAGE_API_NAME
           """
       }
     }
