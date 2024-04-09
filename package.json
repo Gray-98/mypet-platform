@@ -1,0 +1,7 @@
+{
+    "scripts": {
+        "dev": "cd nextjs-mypet && npm run dev",
+        "build": "cd nextjs-mypet && npm run build",
+        "start": "cd nextjs-mypet && npm run start"
+    }
+}
