@@ -4,8 +4,7 @@ import styles from './styles'
 const Layout = ({ children }) => (
 	<>
 		<Head>
-			<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap' />
-			<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons' />
+			<meta name="viewport" content="initial-scale=1, width=device-width" />
 		</Head>
 		<div className='main-container'>
 			{children}
