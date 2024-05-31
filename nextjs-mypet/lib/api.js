@@ -1,16 +1,32 @@
 import axios from 'axios'
 
-const ApiDriver = async (method, path, options) => {
-	const url = `http://cloud.nineteen-cat.top/api${path}`
+class CustomError extends Error {
+	constructor({status, message}) {
+		super(message)
+		this.name = 'CustomErrorWithAxios'
+		this.status = status
+	}
+}
 
-	return await axios({ method, url, ...options })
+const ApiDriver = async (method, url, options) => {
+	try {
+		const { data } = await axios({
+			method,
+			baseURL: 'http://cloud.nineteen-cat.top/api',
+			url,
+			withCredentials: true,
+			...options
+		})
+		return data
+	} catch (e) {
+		const { status, data } = e.response
+		throw new CustomError({ status, message: data.msg })
+	}
 }
 
 class Api {
 	async getHealth() {
-		const { data } = await ApiDriver('get', '/health?name=Test User')
-
-		return data
+		return await ApiDriver('get', '/health?name=Test User')
 	}
 
 	async getFood({ typeId, page = 1, size = 10 }) {
@@ -19,9 +35,9 @@ class Api {
 		if (typeId) {
 			path += `&typeId=${typeId}`
 		}
-		const { data } = await ApiDriver('get', path)
+		const { food, foodType } = await ApiDriver('get', path)
 
-		return { food: data.food, foodType: data.foodType }
+		return { food, foodType }
 	}
 
 	async deleteFood(footId) {
@@ -30,6 +46,15 @@ class Api {
 
 	async updateFood(foodId, params) {
 		await ApiDriver('put', `/food/${foodId}`, { data: params })
+	}
+
+	async login({ username, password }) {
+		const { token } = await ApiDriver('post', '/users/login', { data: { name: username, password } })
+		return token
+	}
+
+	async registry({ username, password }) {
+		await ApiDriver('post', '/users/registration', { data: { name: username, password } })
 	}
 }
 

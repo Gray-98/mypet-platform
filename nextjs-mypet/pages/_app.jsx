@@ -8,12 +8,7 @@ import '@fontsource/roboto/700.css'
 
 
 class MyApp extends App {
-	static async getInitialProps({Component, ctx}) {
-		if (ctx.req && ctx.req.url === '/') {
-			ctx.res.writeHead(302, {Location: '/home'})
-			ctx.res.end()
-		}
-
+	static async getInitialProps({ Component, ctx }) {
 		return {
 			pageProps: Component.getInitialProps
 				? await Component.getInitialProps(ctx)
@@ -22,7 +17,7 @@ class MyApp extends App {
 	}
 
 	render() {
-		const {Component, pageProps} = this.props
+		const { Component, pageProps } = this.props
 		return (
 			<Layout>
 				<Component {...pageProps} />
