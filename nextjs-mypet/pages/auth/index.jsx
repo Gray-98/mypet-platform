@@ -8,7 +8,7 @@ import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import Api from '../../lib/api'
+import { Api } from '../../lib/api'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
@@ -17,6 +17,7 @@ const defaultTheme = createTheme()
 
 const Login = () => {
 	const router = useRouter()
+	const api = new Api()
 
 	const [isLogin, setIsLogin] = useState(true)
 
@@ -24,10 +25,10 @@ const Login = () => {
 		event.preventDefault()
 		const data = new FormData(event.currentTarget)
 		if (isLogin) {
-			await Api.login({ username: data.get('username'), password: data.get('password') })
+			await api.login({ username: data.get('username'), password: data.get('password') })
 			router.push('/')
 		} else {
-			await Api.registry({ username: data.get('username'), password: data.get('password') })
+			await api.registry({ username: data.get('username'), password: data.get('password') })
 			setIsLogin(true)
 		}
 	}

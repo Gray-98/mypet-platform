@@ -1,10 +1,9 @@
-import Api from '../lib/api'
+import { Api } from '../lib/api'
 import Head from 'next/head'
 import { TextField, Autocomplete, Stack, Box } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import FoodItem from '../components/FoodItem'
 import { useState } from 'react'
-import { useRouter } from 'next/router'
 
 const Home = ({ food, foodType }) => {
     const [feed, setFeed] = useState(food)
@@ -13,14 +12,14 @@ const Home = ({ food, foodType }) => {
 
     const [isLoading, setIsLoading] = useState(false)
 
-    const router = useRouter()
+    const api = new Api()
 
     const handleChange = async (e, newValue) => {
         setValue(newValue)
         setPage(1)
         const params = { page: 1 }
         newValue && Object.assign(params, { typeId: newValue.id })
-        const { food } = await Api.getFood(params)
+        const { food } = await api.getFood(params)
         food && setFeed(food)
     }
 
@@ -29,33 +28,25 @@ const Home = ({ food, foodType }) => {
         setPage(page + 1)
         const params = { page: page + 1 }
         value && Object.assign(params, { typeId: value.id })
-        const { food } = await Api.getFood(params)
+        const { food } = await api.getFood(params)
         food && setFeed(feed.concat(food))
         setIsLoading(false)
     }
 
     const handleDelete = (id, count) => async () => {
-        try {
-            if (count > 1) {
-                await Api.updateFood(id, { count: --count })
-                setFeed(feed.reduce((newFeed, cru) => {
-                    if (cru.id === id) {
-                        newFeed.push(Object.assign(cru, { count }))
-                    } else {
-                        newFeed.push(cru)
-                    }
-                    return newFeed
-                }, []))
-            } else {
-                await Api.deleteFood(id)
-                setFeed(feed.filter(item => item.id !== id))
-            }
-        } catch (e) {
-            if (e.status === 401 || e.status === 403) {
-                router.push('/auth')
-            } else {
-                throw e
-            }
+        if (count > 1) {
+            await api.updateFood(id, { count: --count })
+            setFeed(feed.reduce((newFeed, cru) => {
+                if (cru.id === id) {
+                    newFeed.push(Object.assign(cru, { count }))
+                } else {
+                    newFeed.push(cru)
+                }
+                return newFeed
+            }, []))
+        } else {
+            await api.deleteFood(id)
+            setFeed(feed.filter(item => item.id !== id))
         }
     }
 
@@ -102,7 +93,7 @@ const Home = ({ food, foodType }) => {
 }
 
 export async function getServerSideProps() {
-    const { food, foodType } = await Api.getFood({ page: 1 })
+    const { food, foodType } = await new Api().getFood({ page: 1 })
     return { props: { food, foodType: foodType.map(fType => ({ id: fType.id, label: fType.name })) } }
 }
 
